@@ -46,30 +46,8 @@
 % Variables relacionadas con el tipo de memoria (arg. `type`)
 \newcommand{\reporttype}{}
 \newcommand{\reporttypeabbr}{}
-\ifthenelse{\equal{\@upm@type}{pfg}}{
-    \renewcommand{\reporttype}{Proyecto Fin de Grado}
-    \renewcommand{\reporttypeabbr}{PFG}
-}{
-\ifthenelse{\equal{\@upm@type}{tfg}}{
-    \renewcommand{\reporttype}{Trabajo Fin de Grado}
-    \renewcommand{\reporttypeabbr}{TFG}
-}{
-\ifthenelse{\equal{\@upm@type}{pfm}}{
-    \renewcommand{\reporttype}{Proyecto Fin de Máster}
-    \renewcommand{\reporttypeabbr}{PFM}
-}{
-\ifthenelse{\equal{\@upm@type}{tfm}}{
-    \renewcommand{\reporttype}{Trabajo Fin de Máster}
-    \renewcommand{\reporttypeabbr}{TFM}
-}{
-\ifthenelse{\equal{\@upm@type}{td}}{
-    \renewcommand{\reporttype}{Tesis Doctoral}
-    \renewcommand{\reporttypeabbr}{PhD}
-}{
-\ifthenelse{\equal{\reporttype}{}}{
-    \PackageError{upm-report}{Report type}{Falta el parámetro 'type'}
-}{}}}}}}
-
+\renewcommand{\reporttype}{Práctica de Administración y Gestión de Redes}
+\renewcommand{\reporttypeabbr}{PAGR}
 
 % Variables relacionadas con la escuela (arg. `school`)
 \newcommand{\schoolname}{NO DEFINIDO}
@@ -434,34 +412,6 @@
 \newcommand\conditionalLoL{\iftotallstlistings\lstlistoflistings\fi}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Licencia de la memoria
-%
-\RequirePackage[%
-    type={CC},%
-    modifier={by-nc-sa},%
-    version={4.0}%
-]{doclicense}
-
-\makeatletter
-% Impresión de licencia modificada para que incluya más cosas. Es un
-% clon de \docLicenseThis
-\newcommand{\licencia}{%
-    \setlength{\doclicense@hsize}{\linewidth-\doclicense@imagewidth-\doclicense@imagedistance}%
-    \begin{center}
-        \begin{minipage}{\doclicense@hsize}
-            \ifthenelse{\isempty{\doclicense@hyphenation}}{}{%
-                \@nameuse{\doclicense@hyphenation} 
-            }%
-            \doclicenseLongText Obra derivada de \href{\templaterepository}{\templaterepository}.%
-        \end{minipage}
-        \hfill
-        \begin{minipage}{\doclicense@imagewidth}\doclicenseImage\end{minipage}
-    \end{center}
-    \vspace{-1.5em}
-    Todo cambio respecto a la obra original es responsabilidad exclusiva del presente autor.\\
-}
-\makeatother
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Referencias y bibliografía
 %
 \RequirePackage[backend=biber,style=ieee]{biblatex}
@@ -508,7 +458,6 @@
         \parbox[b]{\linewidth}{
             \normalsize
             \textbf{Desarrollado por}: \@author \\*[0.5em]
-            \textbf{Dirigido por}: \@director \\*[0.5em]
             Madrid, \@date
         }
     \end{adjustwidth}
@@ -529,30 +478,12 @@
     \par{
         \textit{\@title}\\
         \textbf{Desarrollado por}: \@author\\
-        \textbf{Dirigido por}: \@director\\
         \reporttype, \today\\
     }
     
     \par{
         \textbf{\schoolname}\\
         \schooladdress
-    }
-    \newline
-    \hrule
-    \par{
-        Si deseas citar este trabajo, la entrada completa en \hologo{BibTeX} es la siguiente:
-
-        \texttt{%
-            @mastersthesis\{citekey,\\%
-            \hspace*{2em}title   = \{\@title\},\\
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            \hspace*{2em}author  = \{\@bibauthor~y~\@bibdirector\},\\
-            \hspace*{2em}school  = \{\schoolname\},\\
-            \hspace*{2em}year    = \{\the\year\},\\
-            \hspace*{2em}month   = \{\the\month\},\\
-            \hspace*{2em}type    = \{\reporttype\}\\
-            \}
-        }
     }
     \newline
     \hrule
@@ -575,46 +506,6 @@
     }
 }}
 \makeatother
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Resumen y abstract
-%
-\makeatletter
-\newcommand{\abstract}[2]{%
-    \ifthenelse{\equal{#1}{spanish}}{\gdef\@abstractsp{#2}}{}%
-    \ifthenelse{\equal{#1}{english}}{\gdef\@abstracten{#2}}{}%
-}%
-\newcommand{\keywords}[2]{%
-    \ifthenelse{\equal{#1}{spanish}}{\gdef\@keywordssp{#2}}{}%
-    \ifthenelse{\equal{#1}{english}}{\gdef\@keywordsen{#2}}{}%
-}%
-
-\newcommand\makeresumen{{
-    \clearpage
-    \thispagestyle{empty}
-    \chapter*{Resumen}
-    \@abstractsp
-
-    \textbf{Palabras clave}: \@keywordssp
-}}
-
-\newcommand\makeabstract{{
-    \clearpage
-    \thispagestyle{empty}
-    \chapter*{Abstract}
-    \@abstracten
-
-    \textbf{Keywords}: \@keywordsen
-}}
-\makeatother
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Glosario
-%
-\RequirePackage[acronym,section,nowarn]{glossaries}
-% Hacemos que no haya salto de página entre glosario y siglas
-\renewcommand*{\glsclearpage}{}
-\makeglossaries
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Cubierta trasera
@@ -671,9 +562,6 @@
 
     \renewcommand\bibname{Referencias}
     \printbibliography
-    \chapter*{Índice de términos}
-    \printglossaries
-    %\printindex  TODO Hacer el índice (por supuesto opcional)
     \makebackcover
 }
 \makeatother

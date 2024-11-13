@@ -259,4 +259,241 @@ Las peticiones solo pueden llegar a los servidores web que están en los nodos 0
 grupo, desde allí la carga se repartirá en la red. Los PCs de los nodos finales solo pueden
 mandar tráfico TCP a los usuarios con los cálculos que han solicitado.
 
+\chapter{Configuración a Escala}
+\label{ch:configuracion-escala}
+
+\section{Descripción de la Nueva Topología}
+
+Para llevar a cabo la segunda parte de la práctica, se ha decidido continuar con una topología de tipo Dragonfly, aunque, conforme a las directrices del enunciado, se ha reducido considerablemente el tamaño de dicha topología. En la figura \ref{fig:scaled-topology} se presenta el esquema de numeración de red propuesto.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\textwidth]{figures/scaled-topology.png}
+    \caption{\label{fig:scaled-topology} Topología reducida para la configuración}
+\end{figure}
+
+El nuevo esquema de numeración refleja los cambios en el número de elementos y la naturaleza de la topología empleada:
+\begin{itemize}
+    \item \textbf{Naturaleza:} En la primera parte se optó por una topología Dragonfly de carácter canónico. Sin embargo, para esta fase se ha configurado una Dragonfly con los parámetros: \(a = 1\), \(g = 4\), y \(h = 3\). Estos valores no cumplen con la fórmula de la Dragonfly canónica, ya que \(g = a + 1 \rightarrow 4 \neq 1 + 1\) y \(h = 1 \rightarrow 3 \neq 1\).
+    \item \textbf{Número de Grupos:} Para facilitar la configuración de los routers, se han implementado 4 routers, equivalentes a 4 grupos en una topología Dragonfly.
+    \item \textbf{Número de Servidores:} Por razones de gestión, el número de racks se ha reducido a 0, empleando 2 servidores en su lugar.
+\end{itemize}
+
+\section{Elementos Físicos Empleados, Configuraciones y Resultados}
+
+\subsection{Elementos Físicos}
+
+Para el despliegue físico de la red, se han utilizado los recursos disponibles en el laboratorio 4314. Las pruebas se realizaron empleando dos ordenadores de grupos distintos, lo cual asegura la escalabilidad de la red a partir de una comunicación exitosa entre ambos equipos. Los elementos utilizados son los siguientes:
+
+\begin{itemize}
+    \item \textbf{Servidores:} 2 ordenadores con sistema operativo Windows 11.
+    \item \textbf{Routers:} 2 dispositivos SRX340.
+    \item \textbf{Switches:} 2 dispositivos QFX5100.
+    \item \textbf{Firewalls:} 2 dispositivos SRX340.
+\end{itemize}
+
+\subsection{Configuraciones}
+
+\subsubsection{Servidores}
+
+Para configurar los equipos con Windows 11, es necesario realizar varios ajustes que permitan una conexión correcta. Estas configuraciones abarcan desde la configuración de la interfaz de red hasta la adaptación del firewall de Windows para permitir el tráfico necesario.
+
+La configuración inicial implica la asignación de la dirección IP, la máscara de subred y la puerta de enlace predeterminada. Además, en caso necesario, se puede especificar el servidor DNS, eligiendo 8.8.8.8 (DNS de Google) como preferencia. Estos pasos se muestran en la figura \ref{fig:ip-config}, y su correcta implementación se verifica en la figura \ref{fig:ip-config-check}.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.49\textwidth}
+        \includegraphics[width=\linewidth]{figures/ip-config-01.png}
+        \caption{\label{fig:ip-config-01} Configuración de red del servidor 10.0.0.1}
+    \end{subfigure}
+    \begin{subfigure}{0.49\textwidth}
+        \includegraphics[width=\linewidth]{figures/ip-config-02.png}
+        \caption{\label{fig:ip-config-02} Configuración de red del servidor 10.0.1.1}
+    \end{subfigure}
+    \caption{\label{fig:ip-config} Configuración de red de los servidores}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/ip-config-check-01.png}
+    \caption{\label{fig:ip-config-check} Verificación de la configuración de red del servidor 10.0.1.1}
+\end{figure}
+
+Finalmente, se debe ajustar el firewall de Windows, que por defecto bloquea la mayoría de conexiones entrantes, incluyendo el protocolo ICMP (ping). Para permitir la conectividad, existen dos opciones:
+\begin{itemize}
+    \item \textbf{Desactivar el Firewall (No recomendado):} Permite cualquier tipo de conectividad, incluso potencialmente maliciosa. Esta práctica es adecuada solo en entornos protegidos y sin acceso al exterior.
+    \item \textbf{Implementar reglas en el Firewall (Recomendado):} Permite mantener el nivel de seguridad y se puede ajustar para permitir solo el tráfico necesario.
+\end{itemize}
+
+Dado que el entorno es controlado y sin acceso externo, se ha optado por desactivar temporalmente el firewall.
+
+\subsubsection{Routers}
+
+Se ha seleccionado el modelo SRX340 en modo router para permitir la conectividad. Es necesario ejecutar una serie de comandos de configuración en el dispositivo, que abarcan desde la configuración de interfaces hasta la adición de rutas estáticas. A continuación, se presenta el script de configuración para los 4 routers:
+
+\paragraph{Router 0}
+
+\begin{lstlisting}[breaklines]
+# Router 0
+
+cli
+configure
+
+# Borrar configuración de seguridad existente y habilitar modo router
+delete security
+set security forwarding-options family mpls mode packet-based
+set security forwarding-options family iso mode packet-based
+set security forwarding-options family inet6 mode packet-based
+
+# Configuración básica
+set system host-name R0
+
+# Interfaces
+set interfaces ge-0/0/0 unit 0 family inet address 10.0.0.244/24
+set interfaces ge-0/0/1 unit 0 family inet address 10.2.0.2/30
+set interfaces ge-0/0/2 unit 0 family inet address 10.4.0.1/30
+set interfaces ge-0/0/3 unit 0 family inet address 10.6.0.1/30
+
+# Rutas estáticas
+set routing-options static route 10.0.1.0/24 next-hop 10.2.0.1
+set routing-options static route 10.0.2.0/24 next-hop 10.4.0.2
+set routing-options static route 10.0.3.0/24 next-hop 10.6.0.2
+set routing-options static route 10.1.0.0/30 next-hop 10.2.0.1
+set routing-options static route 10.3.0.0/30 next-hop 10.4.0.2
+set routing-options static route 10.5.0.0/30 next-hop 10.6.0.2
+
+commit
+\end{lstlisting}
+
+\paragraph{Router 1}
+
+\begin{lstlisting}[breaklines]
+# Router 1
+
+cli
+configure
+
+# Borrar configuración de seguridad existente y habilitar modo router
+delete security
+set security forwarding-options family mpls mode packet-based
+set security forwarding-options family iso mode packet-based
+set security forwarding-options family inet6 mode packet-based
+
+# Configuración básica
+set system host-name R1
+
+# Interfaces
+set interfaces ge-0/0/0 unit 0 family inet address 10.0.1.244/24
+set interfaces ge-0/0/1 unit 0 family inet address 10.2.0.1/30
+set interfaces ge-0/0/2 unit 0 family inet address 10.1.0.1/30
+set interfaces ge-0/0/3 unit 0 family inet address 10.3.0.1/30
+
+# Rutas estáticas
+set routing-options static route 10.0.0.0/24 next-hop 10.2.0.2
+set routing-options static route 10.0.2.0/24 next-hop 10.3.0.2
+set routing-options static route 10.0.3.0/24 next-hop 10.1.0.2
+set routing-options static route 10.4.0.0/30 next-hop 10.2.0.2
+set routing-options static route 10.5.0.0/30 next-hop 10.3.0.2
+set routing-options static route 10.6.0.0/30 next-hop 10.1.0.2
+
+commit
+\end{lstlisting}
+
+\paragraph{Router 2}
+
+\begin{lstlisting}[breaklines]
+# Router 2
+
+cli
+configure
+
+# Borrar configuración de seguridad existente y habilitar modo router
+delete security
+set security forwarding-options family mpls mode packet-based
+set security forwarding-options family iso mode packet-based
+set security forwarding-options family inet6 mode packet-based
+
+# Configuración básica
+set system host-name R2
+
+# Interfaces
+set interfaces ge-0/0/0 unit 0 family inet address 10.0.2.244/24
+set interfaces ge-0/0/1 unit 0 family inet address 10.4.0.2/30
+set interfaces ge-0/0/2 unit 0 family inet address 10.3.0.2/30
+set interfaces ge-0/0/3 unit 0 family inet address 10.5.0.1/30
+
+# Rutas estáticas
+set routing-options static route 10.0.0.0/24 next-hop 10.4.0.1
+set routing-options static route 10.0.1.0/24 next-hop 10.3.0.1
+set routing-options static route 10.0.3.0/24 next-hop 10.5.0.2
+set routing-options static route 10.1.0.0/30 next-hop 10.3.0.1
+set routing-options static route 10.2.0.0/30 next-hop 10.4.0.1
+set routing-options static route 10.6.0.0/30 next-hop 10.5.0.2
+
+commit   
+\end{lstlisting}
+
+\paragraph{Router 3}
+
+\begin{lstlisting}[breaklines]
+# Router 3
+
+cli
+configure
+
+# Borrar configuración de seguridad existente y habilitar modo router
+delete security
+set security forwarding-options family mpls mode packet-based
+set security forwarding-options family iso mode packet-based
+set security forwarding-options family inet6 mode packet-based
+
+# Configuración básica
+set system host-name R3
+
+# Interfaces
+set interfaces ge-0/0/0 unit 0 family inet address 10.0.3.244/24
+set interfaces ge-0/0/1 unit 0 family inet address 10.6.0.2/30
+set interfaces ge-0/0/2 unit 0 family inet address 10.1.0.2/30
+set interfaces ge-0/0/3 unit 0 family inet address 10.5.0.2/30
+
+# Rutas estáticas
+set routing-options static route 10.0.0.0/24 next-hop 10.6.0.1
+set routing-options static route 10.0.1.0/24 next-hop 10.1.0.1
+set routing-options static route 10.0.2.0/24 next-hop 10.5.0.1
+set routing-options static route 10.2.0.0/30 next-hop 10.6.0.1
+set routing-options static route 10.3.0.0/30 next-hop 10.5.0.1
+set routing-options static route 10.4.0.0/30 next-hop 10.1.0.1
+
+commit
+\end{lstlisting}
+
+\subsubsection{Firewalls}
+
+Los firewalls estarán orientados hacia internet y únicamente permitirán tráfico HTTP. La configuración predeterminada en los firewalls con JUNOS es restrictiva; por ello, se deben ejecutar los siguientes comandos para permitir el tráfico HTTP:
+
+\begin{lstlisting}[breaklines]
+# Firewall
+
+cli
+configure
+
+# Asignar interfaces a zonas
+set security zones security-zone trust interfaces ge-0/0/0  # Red interna
+set security zones security-zone untrust interfaces ge-0/0/1  # Internet
+
+# Permitir servicios específicos en la interfaz interna
+set security zones security-zone trust interfaces ge-0/0/0 host-inbound-traffic system-services ssh
+set security zones security-zone trust interfaces ge-0/0/0 host-inbound-traffic system-services ping
+
+# Opcional: Permitir servicios específicos en la interfaz externa
+set security zones security-zone untrust interfaces ge-0/0/1 host-inbound-traffic system-services ping
+set security zones security-zone untrust interfaces ge-0/0/1 host-inbound-traffic system-services ssh
+
+commit
+\end{lstlisting}
+
+\subsubsection{Switches}
+
+En el caso de los dispositivos QFX5100, no es necesario realizar configuraciones adicionales para lograr un funcionamiento básico. En esta modalidad, el equipo conmuta tramas Ethernet sin aplicar reglas o restricciones adicionales.
+
 \end{document}

@@ -331,8 +331,6 @@ Dado que el entorno es controlado y sin acceso externo, se ha optado por desacti
 
 Se ha seleccionado el modelo SRX340 en modo router para permitir la conectividad. Es necesario ejecutar una serie de comandos de configuración en el dispositivo, que abarcan desde la configuración de interfaces hasta la adición de rutas estáticas. A continuación, se presenta el script de configuración para los 4 routers:
 
-\paragraph{Router 0}
-
 \begin{lstlisting}[breaklines]
 # Router 0
 
@@ -364,8 +362,6 @@ set routing-options static route 10.5.0.0/30 next-hop 10.6.0.2
 
 commit
 \end{lstlisting}
-
-\paragraph{Router 1}
 
 \begin{lstlisting}[breaklines]
 # Router 1
@@ -399,8 +395,6 @@ set routing-options static route 10.6.0.0/30 next-hop 10.1.0.2
 commit
 \end{lstlisting}
 
-\paragraph{Router 2}
-
 \begin{lstlisting}[breaklines]
 # Router 2
 
@@ -432,8 +426,6 @@ set routing-options static route 10.6.0.0/30 next-hop 10.5.0.2
 
 commit   
 \end{lstlisting}
-
-\paragraph{Router 3}
 
 \begin{lstlisting}[breaklines]
 # Router 3

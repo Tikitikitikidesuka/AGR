@@ -4,7 +4,7 @@
 ]{upm-report}
 
 \title{Práctica 1: Diseño de un centro de datos bare metal}
-\author{Miguel Hermoso Mantecón, Alejandro Fernández de la Puebla y Adolfo}
+\author{Miguel Hermoso Mantecón, Alejandro Fernández de la Puebla y Adolfo Pavón Jiménez}
 
 \begin{document}
 
@@ -121,12 +121,12 @@ Una vez presentada la arquitectura de la red al completo, junto con sus necesida
 Para poder realizar una estimación del coste de la maquinaria de la red, hay que hacer un recuento de todos los elementos empleados: $4545$ servidores, $240$ racks y $240$ routers. El precio resultante es:
 
 \begin{itemize}
-    \item $4545 \text{ servidores} \cdot 7000 €/\text{servidor} = 31815000 €$
-    \item $240 \text{ racks} \cdot 10000 €/\text{rack} = 2400000 €$
-    \item $240 \text{ routers} \cdot 6000 €/router = 1440000 €$
+    \item $4545 \text{ servidores} \cdot \$ 7000 /\text{servidor} = \$ 31815000$
+    \item $240 \text{ racks} \cdot \$ 10000 /\text{rack} = \$ 2400000$
+    \item $240 \text{ routers} \cdot \$ 6000 /router = \$ 1440000$
 \end{itemize}
 
-Total maquinaria = $35655000 €$
+Total maquinaria = $\$ 35655000$
 
 \subsection{Coste de los Enlaces}
 \label{subsec:coste-enlaces}
@@ -139,6 +139,20 @@ Para asegurar que cada rack tenga capacidad suficiente para manejar este volumen
     \item Capacidad adicional: Al seleccionar enlaces de 100 Gbps, se garantiza un margen por encima del tráfico homogéneo esperado, lo que proporciona flexibilidad en caso de que el tráfico en algún rack aumente temporalmente. Este enfoque previene cuellos de botella y asegura que los racks puedan manejar cargas más altas sin comprometer el rendimiento general de la red.
     \item Simplicidad en las conexiones: Aunque podría ser más económico utilizar dos enlaces de 50 Gbps en lugar de uno de 100 Gbps, la preferencia por un único enlace responde al deseo de simplificar la infraestructura de red. Al reducir el número de conexiones físicas, se disminuye la complejidad del cableado, se mejora la gestión de la red y se minimizan los puntos de fallo potenciales. Además, la utilización de un solo enlace reduce la necesidad de equilibrar tráfico entre múltiples conexiones, lo que puede complicar el diseño y la operación de la red.
 \end{enumerate}
+
+El coste de los enlaces de 100Gbps es de $\$ 252$. A continuación se detallan los cálculos para los enlaces:
+
+\begin{enumerate}
+    \item \textbf{Intra-Rack}: Se tienen 239 racks completos y uno con 4 servidores. Por ende, se van a emplear 19 enlaces en un rack completo y 4 en el incompleto. $$\left ( 19 \cdot 239 + 4 \cdot 1 \right ) \cdot \$ 252 = \$ 1145340$$
+    \item \textbf{Inter-Rack}: Por otro lado, existen 16 grupos en la topología. El grafo resultante de cada grupo es totalmente conexo, por lo que el número de enlaces viene dado por $n(n-1) / 2$. $$16 \cdot \frac{15 (15 - 1)}{2} \cdot \$ 252 = 16 \cdot 105 \cdot \$ 252 = \$ 423360$$
+    \item \textbf{Inter-Grupo}: Finalmente, al haber 16 grupos y al ser el grafo de los grupos también totalmente conexo. $$\frac{16 (16 - 1)}{2} \cdot \$ 252 = \$ 30240$$
+\end{enumerate}
+
+El coste total de los enlaces es $\$ 1598940$.
+
+\subsection{Coste Total}
+
+El coste total de todo el sistema es $\$ 37253940$.
 
 \section{Routing}
 \label{sec:routing}
@@ -337,8 +351,7 @@ Se ha seleccionado el modelo SRX340 en modo router para permitir la conectividad
 cli
 configure
 
-# Borrar configuración de seguridad existente y habilitar modo router
-delete security
+# Borrar configuración de seguridad existente y habilitar modo router delete security
 set security forwarding-options family mpls mode packet-based
 set security forwarding-options family iso mode packet-based
 set security forwarding-options family inet6 mode packet-based
@@ -356,9 +369,6 @@ set interfaces ge-0/0/3 unit 0 family inet address 10.6.0.1/30
 set routing-options static route 10.0.1.0/24 next-hop 10.2.0.1
 set routing-options static route 10.0.2.0/24 next-hop 10.4.0.2
 set routing-options static route 10.0.3.0/24 next-hop 10.6.0.2
-set routing-options static route 10.1.0.0/30 next-hop 10.2.0.1
-set routing-options static route 10.3.0.0/30 next-hop 10.4.0.2
-set routing-options static route 10.5.0.0/30 next-hop 10.6.0.2
 
 commit
 \end{lstlisting}
@@ -369,8 +379,7 @@ commit
 cli
 configure
 
-# Borrar configuración de seguridad existente y habilitar modo router
-delete security
+# Borrar configuración de seguridad existente y habilitar modo router delete security
 set security forwarding-options family mpls mode packet-based
 set security forwarding-options family iso mode packet-based
 set security forwarding-options family inet6 mode packet-based
@@ -388,9 +397,6 @@ set interfaces ge-0/0/3 unit 0 family inet address 10.3.0.1/30
 set routing-options static route 10.0.0.0/24 next-hop 10.2.0.2
 set routing-options static route 10.0.2.0/24 next-hop 10.3.0.2
 set routing-options static route 10.0.3.0/24 next-hop 10.1.0.2
-set routing-options static route 10.4.0.0/30 next-hop 10.2.0.2
-set routing-options static route 10.5.0.0/30 next-hop 10.3.0.2
-set routing-options static route 10.6.0.0/30 next-hop 10.1.0.2
 
 commit
 \end{lstlisting}
@@ -401,8 +407,7 @@ commit
 cli
 configure
 
-# Borrar configuración de seguridad existente y habilitar modo router
-delete security
+# Borrar configuración de seguridad existente y habilitar modo router delete security
 set security forwarding-options family mpls mode packet-based
 set security forwarding-options family iso mode packet-based
 set security forwarding-options family inet6 mode packet-based
@@ -420,11 +425,8 @@ set interfaces ge-0/0/3 unit 0 family inet address 10.5.0.1/30
 set routing-options static route 10.0.0.0/24 next-hop 10.4.0.1
 set routing-options static route 10.0.1.0/24 next-hop 10.3.0.1
 set routing-options static route 10.0.3.0/24 next-hop 10.5.0.2
-set routing-options static route 10.1.0.0/30 next-hop 10.3.0.1
-set routing-options static route 10.2.0.0/30 next-hop 10.4.0.1
-set routing-options static route 10.6.0.0/30 next-hop 10.5.0.2
 
-commit   
+commit 
 \end{lstlisting}
 
 \begin{lstlisting}[breaklines]
@@ -452,9 +454,6 @@ set interfaces ge-0/0/3 unit 0 family inet address 10.5.0.2/30
 set routing-options static route 10.0.0.0/24 next-hop 10.6.0.1
 set routing-options static route 10.0.1.0/24 next-hop 10.1.0.1
 set routing-options static route 10.0.2.0/24 next-hop 10.5.0.1
-set routing-options static route 10.2.0.0/30 next-hop 10.6.0.1
-set routing-options static route 10.3.0.0/30 next-hop 10.5.0.1
-set routing-options static route 10.4.0.0/30 next-hop 10.1.0.1
 
 commit
 \end{lstlisting}
@@ -474,12 +473,10 @@ set security zones security-zone trust interfaces ge-0/0/0  # Red interna
 set security zones security-zone untrust interfaces ge-0/0/1  # Internet
 
 # Permitir servicios específicos en la interfaz interna
-set security zones security-zone trust interfaces ge-0/0/0 host-inbound-traffic system-services ssh
-set security zones security-zone trust interfaces ge-0/0/0 host-inbound-traffic system-services ping
+set security zones security-zone trust interfaces ge-0/0/0 host-inbound-traffic system-services http
 
 # Opcional: Permitir servicios específicos en la interfaz externa
-set security zones security-zone untrust interfaces ge-0/0/1 host-inbound-traffic system-services ping
-set security zones security-zone untrust interfaces ge-0/0/1 host-inbound-traffic system-services ssh
+set security zones security-zone untrust interfaces ge-0/0/1 host-inbound-traffic system-services http
 
 commit
 \end{lstlisting}
@@ -487,5 +484,19 @@ commit
 \subsubsection{Switches}
 
 En el caso de los dispositivos QFX5100, no es necesario realizar configuraciones adicionales para lograr un funcionamiento básico. En esta modalidad, el equipo conmuta tramas Ethernet sin aplicar reglas o restricciones adicionales.
+
+\section{Resultados}
+
+Para verificar el correcto funcionamiento de la red, se ha decidido realizar una prueba de comunicación entre dos servidores ubicados en grupos distintos. Como se indicó previamente, esta prueba es suficiente para asegurar el correcto desempeño en toda la red. Los servidores seleccionados para la prueba corresponden al primer servidor de cada grupo: el servidor con la dirección IP 10.0.0.1 y el servidor con la dirección IP 10.0.1.1.
+
+La prueba de comunicación se llevó a cabo mediante un comando de ping desde el servidor del grupo 0 hacia el servidor del grupo 1. En la figura \ref{fig:ping-test}, se observa claramente que la comunicación se ha realizado de manera exitosa, sin que se presentara ningún tipo de error o pérdida de paquetes.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\textwidth]{figures/ping-test.png}
+    \caption{\label{fig:ping-test} Prueba de ping de dos servidores de la red}
+\end{figure}
+
+Para llevar a cabo una prueba en un entorno en el que el firewall de Windows esté activado, bastaría con ejecutar el siguiente comando desde el servidor correspondiente: curl http://example.com/, sustituyendo la url por la del servidor. Si el comando se ejecuta de manera satisfactoria, se mostrará el código HTML de la página web, lo cual confirmaría la conectividad y la correcta configuración de acceso mediante el firewall.
 
 \end{document}

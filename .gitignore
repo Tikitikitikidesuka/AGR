@@ -1,2 +1,5 @@
-# Makefile build directory
-build/
+.DS_Store
+.vscode
+
+# P1
+/P1/memoria/build

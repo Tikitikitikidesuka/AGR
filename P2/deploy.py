@@ -55,10 +55,10 @@ def create_image_file(machine: Machine, config: Configuration):
         "-f",
         "qcow2",
         "-b",
-        base_disk_path,
+        Path(base_disk_path).absolute(),
         "-F",
         "qcow2",
-        str(output_path),
+        output_path.absolute(),
     ]
     subprocess.run(cmd, check=True)
 

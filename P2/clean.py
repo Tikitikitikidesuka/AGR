@@ -10,8 +10,18 @@ def delete_bridges(config: Configuration) -> None:
     for machine in config.servers + config.routers:
         for interface in machine.interfaces:
             bridge = interface.bridge
+
             try:
                 subprocess.run(['ip', 'link', 'set', bridge, 'down'], check=True)
+                logging.info(f"Bridge {bridge} stopped.")
+            except FileNotFoundError as e:
+                logging.error(f"Command not found: {e}")
+            except subprocess.CalledProcessError as e:
+                logging.warning(f"Bridge {bridge} not found or could not be deleted. Error: {e}")
+            except Exception as e:
+                logging.error(f"Unexpected error while processing bridge {bridge}: {e}")
+
+            try:
                 subprocess.run(['ip', 'link', 'delete', bridge], check=True)
                 logging.info(f"Bridge {bridge} deleted.")
             except FileNotFoundError as e:
@@ -25,10 +35,20 @@ def delete_bridges(config: Configuration) -> None:
 def delete_vms(config: Configuration) -> None:
     for machine in config.servers + config.routers:
         vm_name = machine.name
+
         try:
             subprocess.run(['virsh', 'destroy', vm_name], check=True)
+            logging.info(f"VM {vm_name} destroyed.")
+        except FileNotFoundError as e:
+            logging.error(f"Command not found: {e}")
+        except subprocess.CalledProcessError as e:
+            logging.warning(f"VM {vm_name} could not be destroyed or undefined. Error: {e}")
+        except Exception as e:
+            logging.error(f"Unexpected error while processing VM {vm_name}: {e}")
+
+        try:
             subprocess.run(['virsh', 'undefine', vm_name], check=True)
-            logging.info(f"VM {vm_name} destroyed and undefined.")
+            logging.info(f"VM {vm_name} undefined.")
         except FileNotFoundError as e:
             logging.error(f"Command not found: {e}")
         except subprocess.CalledProcessError as e:

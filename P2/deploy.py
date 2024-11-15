@@ -7,8 +7,6 @@ from network_generator.generator import NetworkGenerator
 from vm_xml_builder import VmXmlBuilder
 
 CONFIG_FILE = "config.toml"
-INTERFACE_FILE_SUFFIX = "-interfaces"
-LINK_FILE_SUFFIX = ".link"
 
 
 def machine_sanitized_name(name: str) -> str:
@@ -117,9 +115,7 @@ def create_vm(machine: Machine, config: Configuration) -> None:
         network_files_dir = Path(config.general.network_config_output_dir)
         machine_network_config_dir = network_files_dir / machine_sanitized_name(machine.name)
         machine_network_config_dir.mkdir(parents=True, exist_ok=True)
-        NetworkGenerator.write_network_config_files(
-            machine, str(machine_network_config_dir), INTERFACE_FILE_SUFFIX, LINK_FILE_SUFFIX
-        )
+        NetworkGenerator.write_network_config_files(machine, str(machine_network_config_dir))
         logging.info(f"Network config files for machine {machine.name} generated.")
 
         for file in os.listdir(machine_network_config_dir):
@@ -127,7 +123,7 @@ def create_vm(machine: Machine, config: Configuration) -> None:
             if os.path.isfile(file_path):
                 dest_path = (
                     "/etc/systemd/network/"
-                    if file.endswith(LINK_FILE_SUFFIX)
+                    if file.endswith(".link")
                     else "/etc/network/"
                 )
                 copy_file_to_vm(str(image_path), file_path, dest_path)

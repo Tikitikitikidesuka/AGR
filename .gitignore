@@ -4,7 +4,8 @@
 .idea
 
 # P1
-/P1/memoria/build
+P1/memoria/build
 
 # P2
 **/__pycache__
+P2/build

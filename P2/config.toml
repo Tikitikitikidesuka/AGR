@@ -1,9 +1,9 @@
 [General]
-xml_template_path = "base-vm.xml"
-base_disk_path = "base-image.qcow2"
-xml_output_dir = "xml_files"
-disk_output_dir = "image_files"
-network_config_output_dir = "network_config_files"
+xml_template_path = "data/base-vm.xml"
+base_disk_path = "data/base-image.qcow2"
+xml_output_dir = "build/xml_files"
+disk_output_dir = "build/image_files"
+network_config_output_dir = "build/network_config_files"
 
 ##############################
 #          Servers           #

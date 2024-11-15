@@ -23,6 +23,12 @@ def machine_xml_filename(name: str) -> str:
     return f"{machine_sanitized_name(name)}{XML_SUFFIX}"
 
 
+def create_output_directories(config: Configuration) -> None:
+    Path(config.general.xml_output_dir).mkdir(parents=True, exist_ok=True)
+    Path(config.general.disk_output_dir).mkdir(parents=True, exist_ok=True)
+    Path(config.general.network_config_output_dir).mkdir(parents=True, exist_ok=True)
+
+
 def create_xml_file(machine: Machine, config: Configuration):
     VmXmlBuilder.from_template(config.general.xml_template_path) \
         .name(machine.name) \
@@ -70,6 +76,7 @@ def create_vm(machine: Machine, config: Configuration):
 
 def main():
     config = load_configuration(CONFIG_FILE)
+    create_output_directories(config)
     """output_dir = Path(config.general.network_config_output_dir) / machine_sanitez_name(config.routers[-1].name)
     output_dir.mkdir(parents=True, exist_ok=True)
     NetworkGenerator.write_network_config_files(config.routers[0], str(output_dir), INTERFACE_FILE_SUFFIX, LINK_FILE_SUFFIX)

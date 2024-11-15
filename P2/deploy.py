@@ -1,21 +1,26 @@
 import os
 from pathlib import Path
-from config_reader import load_configuration, Configuration, Machine
+from config import load_configuration, Configuration, Machine
+from network_generator.generator import NetworkGenerator
 from vm_xml_builder import VmXmlBuilder
 
 CONFIG_FILE = "config.toml"
+INTERFACE_FILE_SUFFIX = "-interfaces"
+LINK_FILE_SUFFIX = ".link"
 
 
-def machine_img_filename(name: str):
+def machine_sanitez_name(name: str) -> str:
+    return name.lower().replace(' ', '')
+
+
+def machine_img_filename(name: str) -> str:
     IMAGE_SUFFIX = "-img.qcow2"
-    sanitized_name = name.lower().replace(' ', '')
-    return f"{sanitized_name}{IMAGE_SUFFIX}"
+    return f"{machine_sanitez_name(name)}{IMAGE_SUFFIX}"
 
 
-def machine_xml_filename(name: str):
-    IMAGE_SUFFIX = "-vm.xml"
-    sanitized_name = name.lower().replace(' ', '')
-    return f"{sanitized_name}{IMAGE_SUFFIX}"
+def machine_xml_filename(name: str) -> str:
+    XML_SUFFIX = "-vm.xml"
+    return f"{machine_sanitez_name(name)}{XML_SUFFIX}"
 
 
 def create_xml_file(machine: Machine, config: Configuration):
@@ -39,14 +44,22 @@ def create_vm(machine: Machine, config: Configuration):
     # Register vm to virsh
     os.system(f"sudo virsh define {machine_xml_filename(machine.name)}")
 
+    # Pasos importantes que se me van a olvidar:
+    # 1. Pasar el fichero interface de cada máquina a /etc/network/interfaces
+    # 2. Pasar los ficheros link de cada máquina a /etc/systemd/network/{nombrefichero}.link
+
     # Copy interfaces config
     pass
 
 
 def main():
     config = load_configuration(CONFIG_FILE)
-    for machine in config.servers + config.routers:
-        create_vm(machine, config)
+    output_dir = Path(config.general.network_config_output_dir) / machine_sanitez_name(config.routers[-1].name)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    NetworkGenerator.write_network_config_files(config.routers[0], str(output_dir), INTERFACE_FILE_SUFFIX, LINK_FILE_SUFFIX)
+    create_xml_file(config.routers[0], config)
+    #for machine in config.servers + config.routers:
+        #create_vm(machine, config)
 
 
 if __name__ == '__main__':

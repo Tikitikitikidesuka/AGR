@@ -4,9 +4,11 @@ from typing import List
 
 @dataclass
 class Interface:
+    id: str
     bridge: str
     ip: str
     mask: str
+    mac: str
 
 
 @dataclass
@@ -37,6 +39,7 @@ class General:
     base_disk_path: str
     xml_output_dir: str
     disk_output_dir: str
+    network_config_output_dir: str
 
 
 @dataclass

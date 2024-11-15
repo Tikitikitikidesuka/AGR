@@ -3,6 +3,7 @@ xml_template_path = "base-vm.xml"
 base_disk_path = "base-image.qcow2"
 xml_output_dir = "xml_files"
 disk_output_dir = "image_files"
+network_config_output_dir = "network_config_files"
 
 ##############################
 #          Servers           #
@@ -13,9 +14,11 @@ name = "Server"
 gateway = "10.0.0.2"
 
 [[Server.Interface]]
+id = "eth0"
 bridge = "br_server"
 ip = "10.0.0.1"
 mask = "255.255.255.0"
+mac = "00:00:00:00:10:01"
 
 ##############################
 #          Routers           #
@@ -25,14 +28,18 @@ mask = "255.255.255.0"
 name = "Router D"
 
 [[Router.Interface]]
+id = "eth0"
 bridge = "br_server"
 ip = "10.0.0.2"
 mask = "255.255.255.0"
+mac = "00:00:00:00:10:02"
 
 [[Router.Interface]]
+id = "eth1"
 bridge = "br_c_d"
 ip = "10.1.0.1"
 mask = "255.255.255.252"
+mac = "00:00:00:00:10:03"
 
 [[Router.RouteRule]]
 destination = "10.0.0.0/24"
@@ -46,19 +53,25 @@ via = "10.1.0.1"
 name = "Router C"
 
 [[Router.Interface]]
+id = "eth0"
 bridge = "br_c_d"
 ip = "10.1.0.2"
 mask = "255.255.255.252"
+mac = "00:00:00:00:10:04"
 
 [[Router.Interface]]
+id = "eth1"
 bridge = "br_a_c"
 ip = "10.2.0.2"
 mask = "255.255.255.252"
+mac = "00:00:00:00:10:05"
 
 [[Router.Interface]]
+id = "eth2"
 bridge = "br_b_c"
 ip = "10.3.0.2"
 mask = "255.255.255.252"
+mac = "00:00:00:00:10:06"
 
 [[Router.RouteRule]]
 destination = "10.0.0.0/24"
@@ -84,19 +97,25 @@ via = "10.3.0.2"
 name = "Router A"
 
 [[Router.Interface]]
+id = "eth0"
 bridge = "br_a_c"
 ip = "10.2.0.1"
 mask = "255.255.255.252"
+mac = "00:00:00:00:10:07"
 
 [[Router.Interface]]
+id = "eth1"
 bridge = "br_a_pc1"
 ip = "10.0.1.2"
 mask = "255.255.255.0"
+mac = "00:00:00:00:10:08"
 
 [[Router.Interface]]
+id = "eth2"
 bridge = "br_a_pc2"
 ip = "10.0.2.2"
 mask = "255.255.255.0"
+mac = "00:00:00:00:10:09"
 
 [[Router.RouteRule]]
 destination = "10.0.1.0/24"
@@ -114,19 +133,25 @@ via = "10.2.0.1"
 name = "Router B"
 
 [[Router.Interface]]
+id = "eth0"
 bridge = "br_b_c"
 ip = "10.3.0.1"
 mask = "255.255.255.252"
+mac = "00:00:00:00:10:10"
 
 [[Router.Interface]]
+id = "eth1"
 bridge = "br_b_pc3"
 ip = "10.0.3.2"
 mask = "255.255.255.0"
+mac = "00:00:00:00:10:11"
 
 [[Router.Interface]]
+id = "eth2"
 bridge = "br_b_pc4"
 ip = "10.0.4.2"
 mask = "255.255.255.0"
+mac = "00:00:00:00:10:12"
 
 [[Router.RouteRule]]
 destination = "10.0.3.0/24"
@@ -149,33 +174,41 @@ name = "PC 1"
 gateway = "10.0.1.2"
 
 [[Server.Interface]]
+id = "eth0"
 bridge = "br_a_pc1"
 ip = "10.0.1.1"
 mask = "255.255.255.0"
+mac = "00:00:00:00:10:13"
 
 [[Server]]
 name = "PC 2"
 gateway = "10.0.2.2"
 
 [[Server.Interface]]
+id = "eth0"
 bridge = "br_a_pc2"
 ip = "10.0.2.1"
 mask = "255.255.255.0"
+mac = "00:00:00:00:10:14"
 
 [[Server]]
 name = "PC 3"
 gateway = "10.0.3.2"
 
 [[Server.Interface]]
+id = "eth0"
 bridge = "br_b_pc3"
 ip = "10.0.3.1"
 mask = "255.255.255.0"
+mac = "00:00:00:00:10:15"
 
 [[Server]]
 name = "PC 4"
 gateway = "10.0.4.2"
 
 [[Server.Interface]]
+id = "eth0"
 bridge = "br_b_pc4"
 ip = "10.0.4.1"
 mask = "255.255.255.0"
+mac = "00:00:00:00:10:16"

@@ -128,7 +128,7 @@ def create_vm(machine: Machine, config: Configuration) -> None:
                 dest_path = (
                     "/etc/systemd/network/"
                     if file.endswith(LINK_FILE_SUFFIX)
-                    else "/etc/network"
+                    else "/etc/network/"
                 )
                 copy_file_to_vm(str(image_path), file_path, dest_path)
 

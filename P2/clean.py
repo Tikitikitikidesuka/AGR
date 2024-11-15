@@ -17,7 +17,7 @@ def delete_bridges(config: Configuration) -> None:
             except FileNotFoundError as e:
                 logging.error(f"Command not found: {e}")
             except subprocess.CalledProcessError as e:
-                logging.warning(f"Bridge {bridge} not found or could not be deleted. Error: {e}")
+                logging.warning(f"Bridge {bridge} not found or could not be stopped. Error: {e}")
             except Exception as e:
                 logging.error(f"Unexpected error while processing bridge {bridge}: {e}")
 
@@ -42,7 +42,7 @@ def delete_vms(config: Configuration) -> None:
         except FileNotFoundError as e:
             logging.error(f"Command not found: {e}")
         except subprocess.CalledProcessError as e:
-            logging.warning(f"VM {vm_name} could not be destroyed or undefined. Error: {e}")
+            logging.warning(f"VM {vm_name} could not be destroyed. Error: {e}")
         except Exception as e:
             logging.error(f"Unexpected error while processing VM {vm_name}: {e}")
 
@@ -52,7 +52,7 @@ def delete_vms(config: Configuration) -> None:
         except FileNotFoundError as e:
             logging.error(f"Command not found: {e}")
         except subprocess.CalledProcessError as e:
-            logging.warning(f"VM {vm_name} could not be destroyed or undefined. Error: {e}")
+            logging.warning(f"VM {vm_name} could not be undefined. Error: {e}")
         except Exception as e:
             logging.error(f"Unexpected error while processing VM {vm_name}: {e}")
 

@@ -4,28 +4,178 @@ base_disk_path = "/path/to/base/disks"
 xml_output_dir = "/path/to/xml/output"
 disk_output_dir = "/path/to/disk/output"
 
+##############################
+#          Servers           #
+##############################
+
 [[Server]]
-name = "Server1"
-gateway = "192.168.1.1"
+name = "MainServer"
+gateway = "10.0.0.2"
 
 [[Server.Interface]]
-bridge = "br0"
-ip = "192.168.1.2"
-mask = "255.255.255.0"
-
-[[Server.Interface]]
-bridge = "br1"
-ip = "192.168.2.2"
-mask = "255.255.255.0"
-
-[[Router]]
-name = "Router1"
-
-[[Router.Interface]]
-bridge = "br0"
+bridge = "br_server"
 ip = "10.0.0.1"
 mask = "255.255.255.0"
 
+##############################
+#          Routers           #
+##############################
+
+[[Router]]
+name = "RouterD"
+
+[[Router.Interface]]
+bridge = "br_server"
+ip = "10.0.0.2"
+mask = "255.255.255.0"
+
+[[Router.Interface]]
+bridge = "br_c_d"
+ip = "10.1.0.1"
+mask = "255.255.255.252"
+
 [[Router.RouteRule]]
-destination = "192.168.1.0"
+destination = "10.0.0.0/24"
 via = "10.0.0.2"
+
+[[Router.RouteRule]]
+destination = "0.0.0.0/0"
+via = "10.1.0.1"
+
+[[Router]]
+name = "RouterC"
+
+[[Router.Interface]]
+bridge = "br_c_d"
+ip = "10.1.0.2"
+mask = "255.255.255.252"
+
+[[Router.Interface]]
+bridge = "br_a_c"
+ip = "10.2.0.2"
+mask = "255.255.255.252"
+
+[[Router.Interface]]
+bridge = "br_b_c"
+ip = "10.3.0.2"
+mask = "255.255.255.252"
+
+[[Router.RouteRule]]
+destination = "10.0.0.0/24"
+via = "10.1.0.0"
+
+[[Router.RouteRule]]
+destination = "10.0.1.0/24"
+via = "10.2.0.2"
+
+[[Router.RouteRule]]
+destination = "10.0.2.0/24"
+via = "10.2.0.2"
+
+[[Router.RouteRule]]
+destination = "10.0.3.0/24"
+via = "10.3.0.2"
+
+[[Router.RouteRule]]
+destination = "10.0.4.0/24"
+via = "10.3.0.2"
+
+[[Router]]
+name = "RouterA"
+
+[[Router.Interface]]
+bridge = "br_a_c"
+ip = "10.2.0.1"
+mask = "255.255.255.252"
+
+[[Router.Interface]]
+bridge = "br_a_pc1"
+ip = "10.0.1.2"
+mask = "255.255.255.0"
+
+[[Router.Interface]]
+bridge = "br_a_pc2"
+ip = "10.0.2.2"
+mask = "255.255.255.0"
+
+[[Router.RouteRule]]
+destination = "10.0.1.0/24"
+via = "10.0.1.2"
+
+[[Router.RouteRule]]
+destination = "10.0.2.0/24"
+via = "10.0.2.2"
+
+[[Router.RouteRule]]
+destination = "0.0.0.0/0"
+via = "10.2.0.1"
+
+[[Router]]
+name = "RouterB"
+
+[[Router.Interface]]
+bridge = "br_b_c"
+ip = "10.3.0.1"
+mask = "255.255.255.252"
+
+[[Router.Interface]]
+bridge = "br_b_pc3"
+ip = "10.0.3.2"
+mask = "255.255.255.0"
+
+[[Router.Interface]]
+bridge = "br_b_pc4"
+ip = "10.0.4.2"
+mask = "255.255.255.0"
+
+[[Router.RouteRule]]
+destination = "10.0.3.0/24"
+via = "10.0.3.2"
+
+[[Router.RouteRule]]
+destination = "10.0.4.0/24"
+via = "10.0.4.2"
+
+[[Router.RouteRule]]
+destination = "0.0.0.0/0"
+via = "10.3.0.1"
+
+##############################
+#            PCs             #
+##############################
+
+[[Server]]
+name = "PC1"
+gateway = "10.0.1.2"
+
+[[Server.Interface]]
+bridge = "br_a_pc1"
+ip = "10.0.1.1"
+mask = "255.255.255.0"
+
+[[Server]]
+name = "PC2"
+gateway = "10.0.2.2"
+
+[[Server.Interface]]
+bridge = "br_a_pc2"
+ip = "10.0.2.1"
+mask = "255.255.255.0"
+
+[[Server]]
+name = "PC3"
+gateway = "10.0.3.2"
+
+[[Server.Interface]]
+bridge = "br_b_pc3"
+ip = "10.0.3.1"
+mask = "255.255.255.0"
+
+[[Server]]
+name = "PC4"
+gateway = "10.0.4.2"
+
+[[Server.Interface]]
+bridge = "br_b_pc4"
+ip = "10.0.4.1"
+mask = "255.255.255.0"

@@ -1,8 +1,8 @@
 [General]
-xml_template_path = "/path/to/xml/templates"
-base_disk_path = "/path/to/base/disks"
-xml_output_dir = "/path/to/xml/output"
-disk_output_dir = "/path/to/disk/output"
+xml_template_path = "base-vm.xml"
+base_disk_path = "base-image.qcow2"
+xml_output_dir = "xml-files"
+disk_output_dir = "image-files"
 
 ##############################
 #          Servers           #

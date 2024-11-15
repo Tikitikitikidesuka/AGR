@@ -1,0 +1,32 @@
+[General]
+xml_template_path = "/path/to/xml/templates"
+base_disk_path = "/path/to/base/disks"
+xml_output_dir = "/path/to/xml/output"
+disk_output_dir = "/path/to/disk/output"
+
+##############################
+#          Servers           #
+##############################
+
+[Machines.Servers.NodeJsServer]
+bridge = ["br-server"]
+ip = ["10.0.0.1"]
+gateway = ["10.0.0.2"]
+mask = ["255.255.255.0"]
+
+##############################
+#          Routers           #
+##############################
+
+[Machines.Routers.Router_D]
+bridge = ["br-server", "br-cd"]
+ip = ["10.0.0.2", "10.1.0.1"]
+mask = ["255.255.255.252", "255.255.255.252"]
+
+[[Machines.Routers.Router_D.routes]]
+dest = "10.0.0.0/24"
+via = "10.0.0.2"
+
+[[Machines.Routers.Router_D.routes]]
+dest = "0.0.0.0/0"
+via = "10.1.0.1"

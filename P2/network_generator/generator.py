@@ -47,7 +47,7 @@ Name={interface.id}
 
     @classmethod
     def write_network_config_files(cls, machine: Machine, output_dir: str, interface_file_suffix: str, link_file_suffix: str) -> None:
-        with open(Path(output_dir) / (machine.name + interface_file_suffix), "w") as f:
+        with open(Path(output_dir) / interface_file_suffix, "w") as f:
             f.write(cls.generate_machine_interface_file(machine))
         for interface in machine.interfaces:
             with open(Path(output_dir) / (interface.id + link_file_suffix), "w") as f:

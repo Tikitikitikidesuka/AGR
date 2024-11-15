@@ -1,26 +1,26 @@
-from lxml import etree
+from config_reader import load_configuration
 from vm_xml_builder import VmXmlBuilder
 
-NETWORK_CONFIG = {
-    'Server': {
-        'bridge': 'br-server',
-        'ip': ['10.0.0.1'],
-        'gateway': ['10.0.0.2'],
-        'mask': ['255.255.255.0'],
-        'is_router': False,
-    },
-    'Router_D': {
-        'bridge': ['br-server', 'br-cd'],
-        'ip': ['10.0.0.2', '10.1.0.1'],
-        'mask': ['255.255.255.252', '255.255.255.252'],
-        'is_router': True,
-        'routes': [
-            {'dest': '10.0.0.0/24', 'via': '10.0.0.2'},
-            {'dest': '0.0.0.0/0', 'via': '10.1.0.1'},
-        ]
-    }
-}
-
 if __name__ == '__main__':
-    for NAME in NETWORK_CONFIG:
-        print(NAME)
+    # Load the configuration from the TOML file
+    config = load_configuration("config.toml")
+
+    # Access the general configuration
+    print("General Configuration:")
+    print(config.general)
+
+    # Access the parsed configuration for servers and routers
+    print("\nServers:")
+    for server in config.servers:
+        print(server)
+
+    print("\nRouters:")
+    for router in config.routers:
+        print(router)
+
+    VmXmlBuilder.from_template('base-vm.xml') \
+        .name('test') \
+        .bridges(['a', 'b']) \
+        .image_path('img.qcow2') \
+        .output_path('out.xd') \
+        .build()

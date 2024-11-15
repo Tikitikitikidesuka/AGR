@@ -4,29 +4,28 @@ base_disk_path = "/path/to/base/disks"
 xml_output_dir = "/path/to/xml/output"
 disk_output_dir = "/path/to/disk/output"
 
-##############################
-#          Servers           #
-##############################
+[[Server]]
+name = "Server1"
+gateway = "192.168.1.1"
 
-[Machines.Servers.NodeJsServer]
-bridge = ["br-server"]
-ip = ["10.0.0.1"]
-gateway = ["10.0.0.2"]
-mask = ["255.255.255.0"]
+[[Server.Interface]]
+bridge = "br0"
+ip = "192.168.1.2"
+mask = "255.255.255.0"
 
-##############################
-#          Routers           #
-##############################
+[[Server.Interface]]
+bridge = "br1"
+ip = "192.168.2.2"
+mask = "255.255.255.0"
 
-[Machines.Routers.Router_D]
-bridge = ["br-server", "br-cd"]
-ip = ["10.0.0.2", "10.1.0.1"]
-mask = ["255.255.255.252", "255.255.255.252"]
+[[Router]]
+name = "Router1"
 
-[[Machines.Routers.Router_D.routes]]
-dest = "10.0.0.0/24"
+[[Router.Interface]]
+bridge = "br0"
+ip = "10.0.0.1"
+mask = "255.255.255.0"
+
+[[Router.RouteRule]]
+destination = "192.168.1.0"
 via = "10.0.0.2"
-
-[[Machines.Routers.Router_D.routes]]
-dest = "0.0.0.0/0"
-via = "10.1.0.1"

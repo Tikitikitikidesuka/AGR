@@ -14,7 +14,11 @@ def parse_servers(servers_data):
     servers = []
     for server_data in servers_data:
         interfaces = parse_interfaces(server_data.get("Interface", []))
-        servers.append(Server(name=server_data["name"], gateway=server_data["gateway"], interfaces=interfaces))
+        servers.append(Server(
+            name=server_data["name"],
+            gateway=server_data["gateway"],
+            interfaces=interfaces
+        ))
     return servers
 
 
@@ -23,7 +27,11 @@ def parse_routers(routers_data):
     for router_data in routers_data:
         interfaces = parse_interfaces(router_data.get("Interface", []))
         route_rules = parse_route_rules(router_data.get("RouteRule", []))
-        routers.append(Router(name=router_data["name"], interfaces=interfaces, route_rules=route_rules))
+        routers.append(Router(
+            name=router_data["name"],
+            interfaces=interfaces,
+            route_rules=route_rules
+        ))
     return routers
 
 

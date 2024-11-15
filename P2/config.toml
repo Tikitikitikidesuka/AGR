@@ -9,7 +9,7 @@ disk_output_dir = "image_files"
 ##############################
 
 [[Server]]
-name = "MainServer"
+name = "Server"
 gateway = "10.0.0.2"
 
 [[Server.Interface]]
@@ -22,7 +22,7 @@ mask = "255.255.255.0"
 ##############################
 
 [[Router]]
-name = "RouterD"
+name = "Router D"
 
 [[Router.Interface]]
 bridge = "br_server"
@@ -43,7 +43,7 @@ destination = "0.0.0.0/0"
 via = "10.1.0.1"
 
 [[Router]]
-name = "RouterC"
+name = "Router C"
 
 [[Router.Interface]]
 bridge = "br_c_d"
@@ -81,7 +81,7 @@ destination = "10.0.4.0/24"
 via = "10.3.0.2"
 
 [[Router]]
-name = "RouterA"
+name = "Router A"
 
 [[Router.Interface]]
 bridge = "br_a_c"
@@ -111,7 +111,7 @@ destination = "0.0.0.0/0"
 via = "10.2.0.1"
 
 [[Router]]
-name = "RouterB"
+name = "Router B"
 
 [[Router.Interface]]
 bridge = "br_b_c"
@@ -145,7 +145,7 @@ via = "10.3.0.1"
 ##############################
 
 [[Server]]
-name = "PC1"
+name = "PC 1"
 gateway = "10.0.1.2"
 
 [[Server.Interface]]
@@ -154,7 +154,7 @@ ip = "10.0.1.1"
 mask = "255.255.255.0"
 
 [[Server]]
-name = "PC2"
+name = "PC 2"
 gateway = "10.0.2.2"
 
 [[Server.Interface]]
@@ -163,7 +163,7 @@ ip = "10.0.2.1"
 mask = "255.255.255.0"
 
 [[Server]]
-name = "PC3"
+name = "PC 3"
 gateway = "10.0.3.2"
 
 [[Server.Interface]]
@@ -172,7 +172,7 @@ ip = "10.0.3.1"
 mask = "255.255.255.0"
 
 [[Server]]
-name = "PC4"
+name = "PC 4"
 gateway = "10.0.4.2"
 
 [[Server.Interface]]

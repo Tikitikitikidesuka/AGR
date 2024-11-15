@@ -9,18 +9,18 @@ INTERFACE_FILE_SUFFIX = "-interfaces"
 LINK_FILE_SUFFIX = ".link"
 
 
-def machine_sanitez_name(name: str) -> str:
+def machine_sanitized_name(name: str) -> str:
     return name.lower().replace(' ', '')
 
 
 def machine_img_filename(name: str) -> str:
     IMAGE_SUFFIX = "-img.qcow2"
-    return f"{machine_sanitez_name(name)}{IMAGE_SUFFIX}"
+    return f"{machine_sanitized_name(name)}{IMAGE_SUFFIX}"
 
 
 def machine_xml_filename(name: str) -> str:
     XML_SUFFIX = "-vm.xml"
-    return f"{machine_sanitez_name(name)}{XML_SUFFIX}"
+    return f"{machine_sanitized_name(name)}{XML_SUFFIX}"
 
 
 def create_xml_file(machine: Machine, config: Configuration):
@@ -34,7 +34,7 @@ def create_xml_file(machine: Machine, config: Configuration):
 
 def create_image_file(machine: Machine, config: Configuration):
     os.system(
-        f"qemu-img create -f qcow2 -b {config.general.base_disk_path} -F qcow2 {machine_img_filename(machine.name)}")
+        f"qemu-img create -f qcow2 -b {config.general.base_disk_path} -F qcow2 {Path(config.general.disk_output_dir) / (machine.name)}")
 
 
 def create_vm(machine: Machine, config: Configuration):
@@ -44,6 +44,7 @@ def create_vm(machine: Machine, config: Configuration):
     xml_path = Path(config.general.xml_output_dir) / machine_xml_filename(machine.name)
     image_path = Path(config.general.disk_output_dir) / machine_img_filename(machine.name)
     network_files_dir = Path(config.general.network_config_output_dir)
+    network_files_dir.mkdir(parents=True, exist_ok=True)
 
     # Register vm to virsh
     os.system(f"sudo virsh define {xml_path}")
@@ -52,9 +53,13 @@ def create_vm(machine: Machine, config: Configuration):
     # 1. Pasar el fichero interface de cada máquina a /etc/network/interfaces
     # 2. Pasar los ficheros link de cada máquina a /etc/systemd/network/{nombrefichero}.link
 
+    machine_network_config_dir = network_files_dir / machine_sanitized_name(machine.name)
+    machine_network_config_dir.mkdir(parents=True, exist_ok=True)
+    NetworkGenerator.write_network_config_files(machine, str(machine_network_config_dir), INTERFACE_FILE_SUFFIX, LINK_FILE_SUFFIX)
+
     # Copy network config files to the machine
-    for file in os.listdir(network_files_dir / machine.name):
-        file_path = os.path.join(network_files_dir / machine.name, file)
+    for file in os.listdir(machine_network_config_dir):
+        file_path = os.path.join(machine_network_config_dir, file)
         if os.path.isfile(file_path) and file.endswith(LINK_FILE_SUFFIX):
             os.system(f"sudo virt-copy-in -a {image_path} {file_path} /etc/systemd/network/")
         elif os.path.isfile(file_path) and file.endswith(INTERFACE_FILE_SUFFIX):

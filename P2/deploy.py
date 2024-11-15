@@ -10,15 +10,6 @@ CONFIG_FILE = "config.toml"
 INTERFACE_FILE_SUFFIX = "-interfaces"
 LINK_FILE_SUFFIX = ".link"
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(),  # Output logs to the console
-        logging.FileHandler('vm_creation.log')  # Log to a file
-    ]
-)
-
 
 def machine_sanitized_name(name: str) -> str:
     return name.lower().replace(' ', '')
@@ -45,6 +36,7 @@ def create_output_directories(config: Configuration) -> None:
             logging.info(f"Created directory: {directory}")
         except Exception as e:
             logging.error(f"Error creating directory {directory}: {e}")
+            raise  # Raise exception to stop further execution
 
 
 def create_xml_file(machine: Machine, config: Configuration) -> None:
@@ -62,6 +54,7 @@ def create_xml_file(machine: Machine, config: Configuration) -> None:
         logging.info(f"XML file for machine {machine.name} created.")
     except Exception as e:
         logging.error(f"Error creating XML file for machine {machine.name}: {e}")
+        raise  # Raise exception to stop further execution
 
 
 def create_image_file(machine: Machine, config: Configuration) -> None:
@@ -83,6 +76,13 @@ def create_image_file(machine: Machine, config: Configuration) -> None:
         logging.info(f"Image file for machine {machine.name} created at {output_path}")
     except subprocess.CalledProcessError as e:
         logging.error(f"Error creating image file for machine {machine.name}: {e}")
+        raise  # Raise exception to stop further execution
+    except FileNotFoundError as e:
+        logging.error(f"Command not found: {e}")
+        raise  # Raise exception to stop further execution
+    except Exception as e:
+        logging.error(f"Unexpected error while creating image file for machine {machine.name}: {e}")
+        raise  # Raise exception to stop further execution
 
 
 def copy_file_to_vm(image_path: str, src_path: str, dest_path: str) -> None:
@@ -92,6 +92,13 @@ def copy_file_to_vm(image_path: str, src_path: str, dest_path: str) -> None:
         logging.info(f"Copied file {src_path} to {dest_path} in VM image.")
     except subprocess.CalledProcessError as e:
         logging.error(f"Error copying file {src_path} to {dest_path} in VM image: {e}")
+        raise  # Raise exception to stop further execution
+    except FileNotFoundError as e:
+        logging.error(f"Command not found: {e}")
+        raise  # Raise exception to stop further execution
+    except Exception as e:
+        logging.error(f"Unexpected error while copying file {src_path} to {dest_path}: {e}")
+        raise  # Raise exception to stop further execution
 
 
 def create_vm(machine: Machine, config: Configuration) -> None:
@@ -126,13 +133,23 @@ def create_vm(machine: Machine, config: Configuration) -> None:
                 copy_file_to_vm(str(image_path), file_path, dest_path)
 
     except Exception as e:
-        logging.error(f"Error creating VM {machine.name}: {e}")
+        logging.error(f"Unexpected error while creating VM {machine.name}: {e}")
+        raise  # Re-raise exception to stop further execution
 
 
 def main():
     try:
         config = load_configuration(CONFIG_FILE)
-        logging.info("Configuration loaded successfully.")
+
+        Path(config.general.deploy_log_path).parent.mkdir(parents=True, exist_ok=True)
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(levelname)s - %(message)s',
+            handlers=[
+                logging.StreamHandler(),  # Output logs to the console
+                logging.FileHandler(config.general.deploy_log_path)  # Log to a file
+            ]
+        )
 
         create_output_directories(config)
 
@@ -142,7 +159,7 @@ def main():
         logging.info("All VMs and network configurations created successfully.")
 
     except Exception as e:
-        logging.error(f"Error in main execution: {e}")
+        logging.error(f"Unexpected error in main execution: {e}")
 
 
 if __name__ == '__main__':

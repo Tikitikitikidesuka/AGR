@@ -4,6 +4,8 @@ base_disk_path = "data/base-image.qcow2"
 xml_output_dir = "build/xml_files"
 disk_output_dir = "build/image_files"
 network_config_output_dir = "build/network_config_files"
+cleaup_log_path = "logs/cleanup.log"
+deploy_log_path = "logs/deploy.log"
 
 ##############################
 #          Servers           #

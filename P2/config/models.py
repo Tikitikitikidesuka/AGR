@@ -40,6 +40,8 @@ class General:
     xml_output_dir: str
     disk_output_dir: str
     network_config_output_dir: str
+    cleaup_log_path: str
+    deploy_log_path: str
 
 
 @dataclass
